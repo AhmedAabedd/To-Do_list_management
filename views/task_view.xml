@@ -1,0 +1,84 @@
+<odoo>
+
+    <record id="view_todo_task_tree" model="ir.ui.view">
+        <field name="name">todo.task.tree</field>
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'new'" decoration-muted="state == 'cancelled'"
+                                                   decoration-success="state == 'inprogress'">
+                <field name="name"/>
+                <field name="assign_to"/>
+                <field name="due_date"/>
+                <field name="deadline_date" decoration-warning="remaining_state == 'warning'"
+                                            decoration-danger="remaining_state == 'danger'" decoration-bf="True"
+                                            attrs="{'invisible': [('state', '=', 'completed')]}"/>
+                <field name="remaining_state" invisible="1"/>
+                <field name="description"/>
+                <field name="state" widget="badge" decoration-info="state == 'new'"
+                                                   decoration-success="state == 'inprogress'"
+                                                   decoration-danger="state == 'paused'"
+                                                   decoration-primary="state == 'completed'"
+                                                   decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_todo_task_form" model="ir.ui.view">
+        <field name="name">todo.task.tree</field>
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_in_progress" string="Start Task" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    <button name="action_completed" string="Finish Task" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                    <button name="action_paused" string="Pause" type="object" class="oe-link"
+                            attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                    <button name="action_in_progress" string="Resume" type="object" class="oe_highlight"
+                            attrs="{'invisible': [('state', '!=', 'paused')]}"/>
+                    <button name="action_cancelled" string="Cancel" type="object" class="oe-link"
+                            attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-primary" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                    <div class="oe_title">
+                        <h1>
+                            <label for="name"/>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    
+                    <notebook>
+                        <page string="Informations">
+                            <group>
+                                <field name="assign_to"/>
+                                <field name="description"/>
+                                <field name="due_date"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_todo_task" model="ir.actions.act_window">
+        <field name="name">Our Tasks</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">todo.task</field>
+        <field name="view_mode">tree,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new task !  
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_task_root"
+              name="Tasks"
+              parent="menu_todo_root"
+              action="action_todo_task"/>
+
+</odoo>
