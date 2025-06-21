@@ -46,7 +46,7 @@ class ToDoTask(models.Model):
             rec.state = 'cancelled'
     
     def _compute_remaining_state(self):
-        today = date.today()
+        today = fields.Date.today()
         for rec in self:
             if rec.due_date:
                 delta = (rec.due_date - today).days
@@ -54,9 +54,13 @@ class ToDoTask(models.Model):
                     rec.remaining_state = 'warning'
                 elif delta < 0 :
                     rec.remaining_state = 'danger'
+                else:
+                    rec.remaining_state = 'normal'
+            else:
+                rec.remaining_state = 'normal'
 
     def _compute_deadline_date(self):
-        today = date.today()
+        today = fields.Date.today()
         print('/////////////////// TODAY IS ',today,' ////////////////////')
         for rec in self:
             if rec.due_date:
