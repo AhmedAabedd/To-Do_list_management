@@ -10,6 +10,7 @@
     'website': 'https://www.proosoftcloud.com/',
     'depends' : [],
     'data': ['security/ir.model.access.csv',
+             'data/data.xml',
              'views/menu.xml',
              'views/task_view.xml',
     ],

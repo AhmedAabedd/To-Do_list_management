@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- SEQUENCE FOR TASK -->
+        <record id="seq_todo_task" model="ir.sequence">
+            <field name="name">Task Sequence</field>
+            <field name="code">todo.task.sequence</field>
+            <field name="prefix">T</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+    
+</odoo>

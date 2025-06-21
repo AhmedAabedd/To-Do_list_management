@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree decoration-info="state == 'new'" decoration-muted="state == 'cancelled'"
                                                    decoration-success="state == 'inprogress'">
+                <field name="reference"/>
                 <field name="name"/>
                 <field name="assign_to"/>
                 <field name="due_date"/>
@@ -50,7 +51,9 @@
                             <field name="name"/>
                         </h1>
                     </div>
-                    
+                    <group>
+                        <field name="reference"/>
+                    </group>
                     <notebook>
                         <page string="Informations">
                             <group>

@@ -8,6 +8,8 @@ class ToDoTask(models.Model):
 
 
     name = fields.Char(string="Task Name", required=1)
+    reference = fields.Char(string="Reference", required=True, copy=False, readonly=True,
+                            default=lambda self: _('New'))
     assign_to = fields.Many2one('res.partner', string="Assign To", required=True)
     description = fields.Text(string="Description")
     due_date = fields.Date(string="Due Date")
@@ -27,6 +29,15 @@ class ToDoTask(models.Model):
 
     deadline_date = fields.Char(string="Deadline", compute="_compute_deadline_date")
 
+
+
+    #Generate auto reference
+    @api.model
+    def create(self, vals):
+        if vals.get('reference', _('New')) == _('New'):
+            vals['reference'] = self.env['ir.sequence'].next_by_code('todo.task.sequence') or _('New')
+        res = super(ToDoTask, self).create(vals)
+        return res
 
     def action_in_progress(self):
         for rec in self:
