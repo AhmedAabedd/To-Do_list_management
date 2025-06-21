@@ -23,9 +23,9 @@ class ToDoTask(models.Model):
         ('normal', 'Normal'),
         ('warning', 'Warning'),
         ('danger', 'Danger')
-    ], default="normal", compute="_compute_remaining_state", store=1)
+    ], default="normal", compute="_compute_remaining_state")
 
-    deadline_date = fields.Char(string="Deadline", compute="_compute_deadline_date", store=1)
+    deadline_date = fields.Char(string="Deadline", compute="_compute_deadline_date")
 
 
     def action_in_progress(self):
@@ -38,13 +38,13 @@ class ToDoTask(models.Model):
     
     def action_completed(self):
         for rec in self:
+            rec.deadline_date = ''
             rec.state = 'completed'
 
     def action_cancelled(self):
         for rec in self:
             rec.state = 'cancelled'
     
-    @api.depends('due_date')
     def _compute_remaining_state(self):
         today = date.today()
         for rec in self:
@@ -55,9 +55,9 @@ class ToDoTask(models.Model):
                 elif delta < 0 :
                     rec.remaining_state = 'danger'
 
-    @api.depends('due_date')
     def _compute_deadline_date(self):
         today = date.today()
+        print('/////////////////// TODAY IS ',today,' ////////////////////')
         for rec in self:
             if rec.due_date:
                 delta = (rec.due_date - today).days
