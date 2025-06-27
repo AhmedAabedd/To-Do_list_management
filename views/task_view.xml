@@ -33,18 +33,18 @@
                     <button name="action_in_progress" string="Start Task" type="object" class="oe_highlight"
                             attrs="{'invisible': [('state', '!=', 'new')]}"/>
                     <button name="action_completed" string="Finish Task" type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                            attrs="{'invisible': [('state', 'in', ['new', 'completed'])]}"/>
                     <button name="action_paused" string="Pause" type="object" class="oe-link"
                             attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
-                    <button name="action_in_progress" string="Resume" type="object" class="oe_highlight"
+                    <button name="action_resume" string="Resume" type="object" class="oe_highlight"
                             attrs="{'invisible': [('state', '!=', 'paused')]}"/>
                     <button name="action_cancelled" string="Cancel" type="object" class="oe-link"
                             attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Completed" bg_color="bg-primary" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
-                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-400" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                    <widget name="web_ribbon" title="Cancelled" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_title">
                         <h1>
                             <label for="name"/>
@@ -52,15 +52,28 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="reference"/>
+                        <group>
+                            <field name="reference"/>
+                        </group>
+                        <group>
+                            <field name="assign_to"/>
+                            <field name="due_date"/>
+                            <field name="formatted_duration"/>
+                            <!--<button name="refresh_formatted_duration" icon="fa-refresh" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>-->
+                        </group>
+                    </group>
+                    <group>
+                        <field name="description"/>
                     </group>
                     <notebook>
-                        <page string="Informations">
-                            <group>
-                                <field name="assign_to"/>
-                                <field name="description"/>
-                                <field name="due_date"/>
-                            </group>
+                        <page string="History">
+                            <field name="history_line_ids">
+                                <tree>
+                                    <field name="task_id" invisible="1"/>
+                                    <field name="state"/>
+                                    <field name="date_time"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
