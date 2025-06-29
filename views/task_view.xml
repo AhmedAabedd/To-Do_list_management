@@ -8,11 +8,19 @@
                 <field name="reference"/>
                 <field name="name"/>
                 <field name="partner_id"/>
-                <field name="due_date"/>
-                <field name="deadline_date" decoration-warning="remaining_state == 'warning'" decoration-danger="remaining_state == 'danger'" decoration-bf="True" attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
+                <field name="deadline_date" decoration-warning="remaining_state == 'warning'"
+                                            decoration-danger="remaining_state == 'danger'"
+                                            decoration-bf="True"
+                                            attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
                 <field name="remaining_state" invisible="1"/>
-                <field name="description"/>
-                <field name="state" widget="badge" decoration-info="state == 'new'" decoration-success="state == 'inprogress'" decoration-danger="state == 'paused'" decoration-primary="state == 'completed'" decoration-muted="state == 'cancelled'"/>
+                <field name="due_date"/>
+                <field name="project_id"/>
+                <field name="state" widget="badge"
+                                    decoration-info="state == 'new'"
+                                    decoration-success="state == 'inprogress'"
+                                    decoration-danger="state == 'paused'"
+                                    decoration-primary="state == 'completed'"
+                                    decoration-muted="state == 'cancelled'"/>
             </tree>
         </field>
     </record>
@@ -45,25 +53,27 @@
                         </h1>
                     </div>
                     <group>
-                        <group>
+                        <group string="Assignment &amp; Tracking">
                             <field name="reference"/>
-                        </group>
-                        <group>
                             <field name="partner_id"/>
                             <field name="project_id"/>
                             <field name="due_date"/>
-                            <field name="active_duration" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                        </group>
+                        <group string="Time Management" attrs="{'invisible': [('state', '!=', 'completed')]}">
+                            <field name="start_time" readonly="1"/>
+                            <field name="finish_time" readonly="1"/>
+                            <field name="active_duration"/>
                         </group>
                     </group>
-                    <group>
-                        <field name="description"/>
+                    <group string="Task Details">
+                        <field name="description" placeholder="Enter detailed task description..."/>
                     </group>
                     <notebook>
-                        <page string="History">
+                        <page string="Activity History">
                             <field name="history_line_ids">
                                 <tree>
                                     <field name="task_id" invisible="1"/>
-                                    <field name="state"/>
+                                    <field name="action"/>
                                     <field name="date_time"/>
                                 </tree>
                             </field>
@@ -96,6 +106,9 @@
         <field name="numbercall">-1</field>
     </record>-->
 
-    <menuitem id="menu_task_root" name="Tasks" parent="menu_todo_root" action="action_todo_task"/>
+    <menuitem id="menu_task_root"
+              name="Tasks"
+              parent="menu_todo_root"
+              action="action_todo_task"/>
 
 </odoo>

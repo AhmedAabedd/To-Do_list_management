@@ -11,9 +11,14 @@ class ToDoTask(models.Model):
     name = fields.Char(string="Task Name", placeholder="e.g.Create new module", required=1)
     reference = fields.Char(string="Reference", default="New", required=True, copy=False, readonly=True)
     project_id = fields.Many2one('todo.project', string="Project")
-    partner_id = fields.Many2one('res.partner', string="Assign To", required=True)
+    partner_id = fields.Many2one(
+        'res.partner',
+        string="Assign To",
+        domain=[('is_company', '=', False)],
+        required=True
+    )
     description = fields.Text(string="Description")
-    due_date = fields.Date(string="Due Date")
+    due_date = fields.Date(string="Due Date", required=1)
     state = fields.Selection([
         ('new', 'New'),
         ('inprogress', 'In Progress'),
@@ -34,7 +39,8 @@ class ToDoTask(models.Model):
 
     active_duration = fields.Char(string="Duration", compute="_compute_active_duration", default="00:00:00")
 
-    starti
+    start_time = fields.Datetime(string="Starting time")
+    finish_time = fields.Datetime(string="Finishing time")
 
 
 
@@ -50,8 +56,9 @@ class ToDoTask(models.Model):
     def action_in_progress(self):
         for rec in self:
             rec.state = 'inprogress'
+            rec.start_time = fields.Datetime.now()
             rec.history_line_ids = [(0, 0, {
-                'state': 'start',
+                'action': 'start',
                 'date_time': fields.Datetime.now(),
             })]
     
@@ -59,7 +66,7 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.state = 'paused'
             rec.history_line_ids = [(0, 0, {
-                'state': 'paused',
+                'action': 'pause',
                 'date_time': fields.Datetime.now(),
             })]
     
@@ -67,7 +74,7 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.state = 'inprogress'
             rec.history_line_ids = [(0, 0, {
-                'state': 'resume',
+                'action': 'resume',
                 'date_time': fields.Datetime.now(),
             })]
     
@@ -75,8 +82,9 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.deadline_date = ''
             rec.state = 'completed'
+            rec.finish_time = fields.Datetime.now()
             rec.history_line_ids = [(0, 0, {
-                'state': 'completed',
+                'action': 'complete',
                 'date_time': fields.Datetime.now(),
             })]
 
@@ -84,7 +92,7 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.state = 'cancelled'
             rec.history_line_ids = [(0, 0, {
-                'state': 'cancelled',
+                'action': 'cancel',
                 'date_time': fields.Datetime.now(),
             })]
     
@@ -118,6 +126,16 @@ class ToDoTask(models.Model):
                     rec.deadline_date = "Yesterday"
                 else:
                     rec.deadline_date = f"{abs(delta)} days ago"
+            else:
+                rec.deadline_date = "No due date"
+
+    def _compute_start_time(self):
+        for rec in self:
+            rec.start_time = fields.Datetime.now()
+    
+    def _finish_time(self):
+        for rec in self:
+            rec.finish_time = fields.Datetime.now()
     
     def _compute_active_duration(self):
         for rec in self:
@@ -126,9 +144,9 @@ class ToDoTask(models.Model):
             start_time = None
 
             for line in lines:
-                if line.state in ('start', 'resume'):
+                if line.action in ('start', 'resume'):
                     start_time = line.date_time
-                elif line.state in ('paused', 'completed') and start_time and line.date_time:
+                elif line.action in ('pause', 'complete') and start_time and line.date_time:
                     duration = (line.date_time - start_time).total_seconds()
                     total_seconds += max(0, duration)
                     start_time = None
@@ -164,12 +182,12 @@ class HistoryLines(models.Model):
 
 
     task_id = fields.Many2one('todo.task')
-    state = fields.Selection([
+    action = fields.Selection([
         ('start', 'Start'),
-        ('paused', 'Paused'),
+        ('pause', 'Pause'),
         ('resume', 'Resume'),
-        ('completed', 'Completed'),
-        ('cancelled', 'Cancelled')
-    ], default="start")
+        ('complete', 'Complete'),
+        ('cancel', 'Cancel')
+    ])
     
     date_time = fields.Datetime(string="Time")
