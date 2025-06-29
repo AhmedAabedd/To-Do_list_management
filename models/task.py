@@ -8,9 +8,10 @@ class ToDoTask(models.Model):
     _name = 'todo.task'
 
 
-    name = fields.Char(string="Task Name", required=1)
+    name = fields.Char(string="Task Name", placeholder="e.g.Create new module", required=1)
     reference = fields.Char(string="Reference", default="New", required=True, copy=False, readonly=True)
-    assign_to = fields.Many2one('res.partner', string="Assign To", required=True)
+    project_id = fields.Many2one('todo.project', string="Project")
+    partner_id = fields.Many2one('res.partner', string="Assign To", required=True)
     description = fields.Text(string="Description")
     due_date = fields.Date(string="Due Date")
     state = fields.Selection([
@@ -31,8 +32,10 @@ class ToDoTask(models.Model):
 
     history_line_ids = fields.One2many('history.lines', 'task_id')
 
-    total_duration = fields.Float(string="Active Hours", compute="_compute_total_duration")
-    formatted_duration = fields.Char(string="Active Duration", compute="_compute_total_duration")
+    active_duration = fields.Char(string="Duration", compute="_compute_active_duration", default="00:00:00")
+
+    starti
+
 
 
 
@@ -116,8 +119,7 @@ class ToDoTask(models.Model):
                 else:
                     rec.deadline_date = f"{abs(delta)} days ago"
     
-    @api.depends('history_line_ids')
-    def _compute_total_duration(self):
+    def _compute_active_duration(self):
         for rec in self:
             total_seconds = 0
             lines = rec.history_line_ids.sorted('date_time')
@@ -126,20 +128,26 @@ class ToDoTask(models.Model):
             for line in lines:
                 if line.state in ('start', 'resume'):
                     start_time = line.date_time
-                elif line.state in ('paused', 'completed') and start_time:
-                    if line.date_time and start_time:
-                        duration = (line.date_time - start_time).total_seconds()
-                        total_seconds += duration
-                        start_time = None
+                elif line.state in ('paused', 'completed') and start_time and line.date_time:
+                    duration = (line.date_time - start_time).total_seconds()
+                    total_seconds += max(0, duration)
+                    start_time = None
 
-            rec.total_duration = round(total_seconds / 3600, 2)
+            # ✅ Handle "in progress" time still running
+            if rec.state == 'inprogress' and start_time:
+                now = fields.Datetime.now()
+                duration = (now - start_time).total_seconds()
+                total_seconds += max(0, duration)
 
+            # Format the result
             hours = int(total_seconds // 3600)
             minutes = int((total_seconds % 3600) // 60)
-            rec.formatted_duration = f"{hours:02d}:{minutes:02d}"
-
+            seconds = int(total_seconds % 60)
+            rec.active_duration = f"{hours:02d}:{minutes:02d}:{seconds:02d}"
     
-
+    def action_refresh_active_duration(self):
+        for rec in self:
+            rec._compute_active_duration()
    
 
 
@@ -161,8 +169,7 @@ class HistoryLines(models.Model):
         ('paused', 'Paused'),
         ('resume', 'Resume'),
         ('completed', 'Completed'),
-        ('cancelled', 'Cancelled'),
-        ('refresh', 'Refresh'),
+        ('cancelled', 'Cancelled')
     ], default="start")
     
     date_time = fields.Datetime(string="Time")

@@ -4,22 +4,15 @@
         <field name="name">todo.task.tree</field>
         <field name="model">todo.task</field>
         <field name="arch" type="xml">
-            <tree decoration-info="state == 'new'" decoration-muted="state == 'cancelled'"
-                                                   decoration-success="state == 'inprogress'">
+            <tree decoration-info="state == 'new'" decoration-muted="state == 'cancelled'" decoration-success="state == 'inprogress'">
                 <field name="reference"/>
                 <field name="name"/>
-                <field name="assign_to"/>
+                <field name="partner_id"/>
                 <field name="due_date"/>
-                <field name="deadline_date" decoration-warning="remaining_state == 'warning'"
-                                            decoration-danger="remaining_state == 'danger'" decoration-bf="True"
-                                            attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
+                <field name="deadline_date" decoration-warning="remaining_state == 'warning'" decoration-danger="remaining_state == 'danger'" decoration-bf="True" attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
                 <field name="remaining_state" invisible="1"/>
                 <field name="description"/>
-                <field name="state" widget="badge" decoration-info="state == 'new'"
-                                                   decoration-success="state == 'inprogress'"
-                                                   decoration-danger="state == 'paused'"
-                                                   decoration-primary="state == 'completed'"
-                                                   decoration-muted="state == 'cancelled'"/>
+                <field name="state" widget="badge" decoration-info="state == 'new'" decoration-success="state == 'inprogress'" decoration-danger="state == 'paused'" decoration-primary="state == 'completed'" decoration-muted="state == 'cancelled'"/>
             </tree>
         </field>
     </record>
@@ -30,22 +23,22 @@
         <field name="arch" type="xml">
             <form>
                 <header>
-                    <button name="action_in_progress" string="Start Task" type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'new')]}"/>
-                    <button name="action_completed" string="Finish Task" type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', 'in', ['new', 'completed'])]}"/>
-                    <button name="action_paused" string="Pause" type="object" class="oe-link"
-                            attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
-                    <button name="action_resume" string="Resume" type="object" class="oe_highlight"
-                            attrs="{'invisible': [('state', '!=', 'paused')]}"/>
-                    <button name="action_cancelled" string="Cancel" type="object" class="oe-link"
-                            attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
+                    <button name="action_in_progress" string="Start Task" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'new')]}"/>
+                    <button name="action_completed" string="Finish Task" type="object" class="oe_highlight" attrs="{'invisible': [('state', 'in', ['new', 'completed'])]}"/>
+                    <button name="action_paused" string="Pause" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                    <button name="action_resume" string="Resume" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'paused')]}"/>
+                    <button name="action_cancelled" string="Cancel" type="object" class="oe-link" attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
-                    <div class="oe_title">
+                    <div class="oe_button_box" name="button_box" attrs="{'invisible': [('state', '=', 'completed')]}">
+                        <button name="action_refresh_active_duration" type="object" class="oe_stat_button" icon="fa-refresh" title="Click to refresh the active time on this task">
+                            <field name="active_duration" widget="statinfo" string="Duration"/>
+                        </button>
+                    </div>
+                    <div class="oe_title mb-3">
                         <h1>
                             <label for="name"/>
                             <field name="name"/>
@@ -56,10 +49,10 @@
                             <field name="reference"/>
                         </group>
                         <group>
-                            <field name="assign_to"/>
+                            <field name="partner_id"/>
+                            <field name="project_id"/>
                             <field name="due_date"/>
-                            <field name="formatted_duration"/>
-                            <!--<button name="refresh_formatted_duration" icon="fa-refresh" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>-->
+                            <field name="active_duration" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                         </group>
                     </group>
                     <group>
@@ -103,9 +96,6 @@
         <field name="numbercall">-1</field>
     </record>-->
 
-    <menuitem id="menu_task_root"
-              name="Tasks"
-              parent="menu_todo_root"
-              action="action_todo_task"/>
+    <menuitem id="menu_task_root" name="Tasks" parent="menu_todo_root" action="action_todo_task"/>
 
 </odoo>
