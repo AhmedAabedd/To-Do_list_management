@@ -1,0 +1,27 @@
+<odoo>
+
+    <record id="wizard_add_reason_form" model="ir.ui.view">
+        <field name="name">add.reason.form</field>
+        <field name="model">add.reason</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="task_id" readonly="1"/>
+                    <field name="reason_description" placeholder="Give a reason why you want to cancel this task..."/>
+                </group>
+                <footer>
+                    <button string="Confirm" type="object" name="action_confirm_add_reason" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_add_reason" model="ir.actions.act_window">
+        <field name="name">Add Reason</field>
+        <field name="res_model">add.reason</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

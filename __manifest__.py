@@ -11,6 +11,7 @@
     'depends' : [],
     'data': ['security/ir.model.access.csv',
              'data/data.xml',
+             'wizards/add_reason_view.xml',
              'views/menu.xml',
              'views/task_view.xml',
              'views/project_view.xml',

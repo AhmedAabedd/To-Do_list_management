@@ -42,6 +42,9 @@ class ToDoTask(models.Model):
     start_time = fields.Datetime(string="Starting time")
     finish_time = fields.Datetime(string="Finishing time")
 
+    git_push = fields.Boolean(string="Push To Git")
+
+    cancel_reason = fields.Text(string="Reason")
 
 
 
@@ -90,11 +93,21 @@ class ToDoTask(models.Model):
 
     def action_cancelled(self):
         for rec in self:
-            rec.state = 'cancelled'
-            rec.history_line_ids = [(0, 0, {
-                'action': 'cancel',
-                'date_time': fields.Datetime.now(),
-            })]
+            return{
+                'type': 'ir.actions.act_window',
+                'name': 'Adddd Reason',
+                'res_model': 'add.reason',
+                'view_mode': 'form',
+                'target':'new',
+                'context': {
+                    'default_task_id': rec.id
+                }
+            }
+            #rec.state = 'cancelled'
+            #rec.history_line_ids = [(0, 0, {
+            #    'action': 'cancel',
+            #    'date_time': fields.Datetime.now(),
+            #})]
     
     def _compute_remaining_state(self):
         today = fields.Date.today()

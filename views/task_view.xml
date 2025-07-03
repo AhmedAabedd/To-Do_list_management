@@ -67,6 +67,7 @@
                     </group>
                     <group string="Task Details">
                         <field name="description" placeholder="Enter detailed task description..."/>
+                        <field name="git_push"/>
                     </group>
                     <notebook>
                         <page string="Activity History">
@@ -77,6 +78,9 @@
                                     <field name="date_time"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Reason" attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                            <field name="cancel_reason"/>
                         </page>
                     </notebook>
                 </sheet>
