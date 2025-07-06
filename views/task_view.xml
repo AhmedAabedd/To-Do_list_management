@@ -39,7 +39,7 @@
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
-                    <div style="position: absolute; right: 30px; z-index: 10;">
+                    <div style="position: absolute; top: 80px; right: 38px; z-index: 10;">
                         <field name="progress" widget="progressbar" options="{'max_value': 100}" attrs="{'invisible': [('track_progress', '=', False)]}"/>
                     </div>
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
