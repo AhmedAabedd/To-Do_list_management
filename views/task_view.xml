@@ -56,7 +56,7 @@
                         </h1>
                         
                     </div>
-                    <group>
+                    <group col="2">
                         <group string="Assignment &amp; Tracking">
                             <field name="reference"/>
                             <field name="partner_id"/>
@@ -66,7 +66,12 @@
                         </group>
                         <group string="Progress Details" attrs="{'invisible': [('track_progress', '=', False)]}">
                             <field name="total_units"/>
-                            <field name="completed_units"/>
+                            <label for="completed_units">Completed Units</label>
+                            <div class="d-flex align-items-center">
+                                <field name="completed_units" style="flex: 1;" class="oe_inline"/>
+                                <button name="action_decrease_completed_units" type="object" string="-" class="btn btn-light btn-sm" style="padding: 3px 10px;"/>
+                                <button name="action_increase_completed_units" type="object" string="+" class="btn btn-light btn-sm" style="padding: 3px 10px;"/>
+                            </div>
                         </group>
                     </group>
                     <group string="Task Details">
@@ -106,12 +111,25 @@
             <kanban>
                 <field name="name"/>
                 <field name="progress"/>
+                <field name="state"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click">
                             <strong><field name="name"/></strong>
-                            <div>
-                                <field name="progress" widget="progressbar" options="{'max_value': 100}"/>
+                            <div class="oe_kanban_footer">
+                                <div class="o_kanban_record_bottom">
+                                    <div class="oe_kanban_bottom_left">
+                                        <field name="progress" widget="progressbar" options="{'max_value': 100}"/>
+                                    </div>
+                                    <div class="oe_kanban_bottom_right">
+                                        <field name="state" widget="badge"
+                                                decoration-info="state == 'new'"
+                                                decoration-success="state == 'inprogress'"
+                                                decoration-danger="state == 'paused'"
+                                                decoration-primary="state == 'completed'"
+                                                decoration-muted="state == 'cancelled'"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </t>
@@ -125,7 +143,7 @@
         <field name="name">Our Tasks</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">todo.task</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">kanban,tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a new task !  

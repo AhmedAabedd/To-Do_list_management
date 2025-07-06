@@ -1,0 +1,24 @@
+<odoo>
+
+    <record id="wizard_confirm_complete_form" model="ir.ui.view">
+        <field name="name">confirm.complete.form</field>
+        <field name="model">todo.confirm.complete</field>
+        <field name="arch" type="xml">
+            <form>
+                <field name="message" readonly="1" nolabel="1"/>
+                <footer>
+                    <button string="Set To Completed" type="object" name="action_set_completed" class="btn-primary"/>
+                    <button string="No Thanks" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_add_reason" model="ir.actions.act_window">
+        <field name="name">Confirm Complete</field>
+        <field name="res_model">todo.confirm.complete</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

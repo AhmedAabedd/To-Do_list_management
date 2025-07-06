@@ -47,8 +47,8 @@ class ToDoTask(models.Model):
 
     track_progress = fields.Boolean(string="Show Progress Details", default=False, help="Enable this option only if you already know how many items the task includes, so progress tracking fields can be shown.")
     hint = fields.Text(default="Enable this option only if you already know how many items the task includes, so progress tracking fields can be shown.")
-    total_units = fields.Integer(string="Total Units", help="e.g., Total tutorial videos to watch")
-    completed_units = fields.Integer(string="Completed Units", help="e.g., Number of videos watched")
+    total_units = fields.Float(string="Total Units", help="e.g., Total tutorial videos to watch")
+    completed_units = fields.Float(string="Completed Units", help="e.g., Number of videos watched")
     progress = fields.Float(string="Progress", compute="_compute_progress", store=True)
 
 
@@ -188,6 +188,26 @@ class ToDoTask(models.Model):
             else:
                 rec.progress = 0
    
+    def action_increase_completed_units(self):
+        for rec in self:
+            rec.completed_units += 1
+
+            if rec.completed_units == rec.total_units:
+                return{
+                    'type': 'ir.actions.act_window',
+                    'name': 'Complete Task ?',
+                    'res_model': 'todo.confirm.complete',
+                    'view_mode': 'form',
+                    'target': 'new',
+                    'context': {
+                        'default_task_id': rec.id,
+                        'default_message': f"You completed all the units ({rec.completed_units}/{rec.total_units}). Do you want to mark this task as completed ?"
+                    }
+                }
+    
+    def action_decrease_completed_units(self):
+        for rec in self:
+            rec.completed_units -= 1
 
 
 
