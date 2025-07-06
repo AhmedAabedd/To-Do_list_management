@@ -37,14 +37,19 @@ class ToDoTask(models.Model):
 
     history_line_ids = fields.One2many('history.lines', 'task_id')
 
-    active_duration = fields.Char(string="Duration", compute="_compute_active_duration", default="00:00:00")
-
     start_time = fields.Datetime(string="Starting time")
     finish_time = fields.Datetime(string="Finishing time")
+    active_duration = fields.Char(string="Duration", compute="_compute_active_duration", default="00:00:00")
 
     git_push = fields.Boolean(string="Push To Git")
 
     cancel_reason = fields.Text(string="Reason")
+
+    track_progress = fields.Boolean(string="Show Progress Details", default=False, help="Enable this option only if you already know how many items the task includes, so progress tracking fields can be shown.")
+    hint = fields.Text(default="Enable this option only if you already know how many items the task includes, so progress tracking fields can be shown.")
+    total_units = fields.Integer(string="Total Units", help="e.g., Total tutorial videos to watch")
+    completed_units = fields.Integer(string="Completed Units", help="e.g., Number of videos watched")
+    progress = fields.Float(string="Progress", compute="_compute_progress", store=True)
 
 
 
@@ -103,11 +108,6 @@ class ToDoTask(models.Model):
                     'default_task_id': rec.id
                 }
             }
-            #rec.state = 'cancelled'
-            #rec.history_line_ids = [(0, 0, {
-            #    'action': 'cancel',
-            #    'date_time': fields.Datetime.now(),
-            #})]
     
     def _compute_remaining_state(self):
         today = fields.Date.today()
@@ -179,6 +179,14 @@ class ToDoTask(models.Model):
     def action_refresh_active_duration(self):
         for rec in self:
             rec._compute_active_duration()
+
+    @api.depends('total_units', 'completed_units')
+    def _compute_progress(self):
+        for rec in self:
+            if rec.total_units > 0:
+                rec.progress = (rec.completed_units / rec.total_units) * 100
+            else:
+                rec.progress = 0
    
 
 

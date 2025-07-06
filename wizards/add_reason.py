@@ -23,4 +23,4 @@ class AddReason(models.TransientModel):
                     'action': 'cancel',
                     'date_time': fields.Datetime.now(),
                 })]
-                return {'type': 'ir.actions.act_window_close'}#to close the wizard
+                return {'type': 'ir.actions.act_window_close'}#to close the wizard when confirming

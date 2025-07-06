@@ -39,6 +39,9 @@
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
+                    <div style="position: absolute; right: 30px; z-index: 10;">
+                        <field name="progress" widget="progressbar" options="{'max_value': 100}" attrs="{'invisible': [('track_progress', '=', False)]}"/>
+                    </div>
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible': [('state', '=', 'completed')]}">
@@ -51,6 +54,7 @@
                             <label for="name"/>
                             <field name="name"/>
                         </h1>
+                        
                     </div>
                     <group>
                         <group string="Assignment &amp; Tracking">
@@ -58,16 +62,16 @@
                             <field name="partner_id"/>
                             <field name="project_id"/>
                             <field name="due_date"/>
+                            <field name="track_progress" widget="boolean_toggle"/>
                         </group>
-                        <group string="Time Management" attrs="{'invisible': [('state', '!=', 'completed')]}">
-                            <field name="start_time" readonly="1"/>
-                            <field name="finish_time" readonly="1"/>
-                            <field name="active_duration"/>
+                        <group string="Progress Details" attrs="{'invisible': [('track_progress', '=', False)]}">
+                            <field name="total_units"/>
+                            <field name="completed_units"/>
                         </group>
                     </group>
                     <group string="Task Details">
-                        <field name="description" placeholder="Enter detailed task description..."/>
-                        <field name="git_push"/>
+                        <field name="description" string="" placeholder="Enter detailed task description..."/>
+                        <field name="git_push" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     </group>
                     <notebook>
                         <page string="Activity History">
@@ -79,7 +83,14 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Reason" attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                        <page string="Time Management" attrs="{'invisible': [('state', '!=', 'completed')]}">
+                            <group>
+                                <field name="start_time" readonly="1"/>
+                                <field name="finish_time" readonly="1"/>
+                                <field name="active_duration"/>
+                            </group>    
+                        </page>
+                        <page string="Cancellation Reason" attrs="{'invisible': [('cancel_reason', '=', False)]}">
                             <field name="cancel_reason"/>
                         </page>
                     </notebook>
@@ -87,6 +98,28 @@
             </form>
         </field>
     </record>
+
+    <record id="view_kanban_task_progress" model="ir.ui.view">
+        <field name="name">todo.task.kanban.progress</field>
+        <field name="model">todo.task</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="name"/>
+                <field name="progress"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <strong><field name="name"/></strong>
+                            <div>
+                                <field name="progress" widget="progressbar" options="{'max_value': 100}"/>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
 
     <record id="action_todo_task" model="ir.actions.act_window">
         <field name="name">Our Tasks</field>
