@@ -1,6 +1,7 @@
 from odoo import models, fields, api, _
 from datetime import date
 from datetime import datetime as dt
+from odoo.exceptions import ValidationError
 
 
 
@@ -194,6 +195,9 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.completed_units += 1
 
+            if rec.completed_units > rec.total_units:
+                rec.completed_units = rec.total_units
+
             if rec.completed_units == rec.total_units:
                 return{
                     'type': 'ir.actions.act_window',
@@ -213,20 +217,35 @@ class ToDoTask(models.Model):
     
     def _compute_estimated_time(self):
         for rec in self:
-            duration_str = rec.active_duration  # example: "02:01:03"
-            parts = duration_str.split(':')      # → ['02', '01', '03']
-            hours = int(parts[0])                # → 2
-            minutes = int(parts[1])              # → 1
-            duration_minutes = hours * 60 + minutes # → 121
+            if rec.progress != 0:
+                duration_str = rec.active_duration  # example: "02:01:03"
+                parts = duration_str.split(':')      # → ['02', '01', '03']
+                hours = int(parts[0])                # → 2
+                minutes = int(parts[1])              # → 1
+                duration_minutes = hours * 60 + minutes # → 121
 
-            incomplete_progress = 100 - rec.progress
+                incomplete_progress = 100 - rec.progress
 
-            estimated_minutes = (incomplete_progress * duration_minutes) / rec.progress
-            
-            h = int(estimated_minutes // 60)
-            m = int(estimated_minutes % 60)
+                estimated_minutes = (incomplete_progress * duration_minutes) / rec.progress
+                
+                h = int(estimated_minutes // 60)
+                m = int(estimated_minutes % 60)
 
             rec.estimated_time = f"(Estimated: {h:02d}:{m:02d})"
+    
+    @api.constrains('completed_units')
+    def check_completed_units(self):
+        for rec in self:
+            if rec.completed_units < 0:
+                raise ValidationError(_("Completed Units can't be negative !"))
+            if rec.completed_units > rec.total_units:
+                raise ValidationError(_(f"Completed Units can't exceed Total Units ({rec.total_units}) !"))
+    
+    @api.constrains('total_units')
+    def check_total_units(self):
+        for rec in self:
+            if rec.total_units < 0:
+                raise ValidationError(_("Total Units can't be negative !"))
 
 
 
