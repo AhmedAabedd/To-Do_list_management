@@ -51,6 +51,8 @@ class ToDoTask(models.Model):
     completed_units = fields.Float(string="Completed Units", help="e.g., Number of videos watched")
     progress = fields.Float(string="Progress", compute="_compute_progress", store=True)
 
+    estimated_time = fields.Char(string="Estimated", compute="_compute_estimated_time")
+
 
 
     #Generate auto reference
@@ -208,6 +210,23 @@ class ToDoTask(models.Model):
     def action_decrease_completed_units(self):
         for rec in self:
             rec.completed_units -= 1
+    
+    def _compute_estimated_time(self):
+        for rec in self:
+            duration_str = rec.active_duration  # example: "02:01:03"
+            parts = duration_str.split(':')      # → ['02', '01', '03']
+            hours = int(parts[0])                # → 2
+            minutes = int(parts[1])              # → 1
+            duration_minutes = hours * 60 + minutes # → 121
+
+            incomplete_progress = 100 - rec.progress
+
+            estimated_minutes = (incomplete_progress * duration_minutes) / rec.progress
+            
+            h = int(estimated_minutes // 60)
+            m = int(estimated_minutes % 60)
+
+            rec.estimated_time = f"(Estimated: {h:02d}:{m:02d})"
 
 
 

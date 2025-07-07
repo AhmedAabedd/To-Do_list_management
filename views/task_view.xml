@@ -42,6 +42,9 @@
                     <div style="position: absolute; top: 80px; right: 38px; z-index: 10;">
                         <field name="progress" widget="progressbar" options="{'max_value': 100}" attrs="{'invisible': [('track_progress', '=', False)]}"/>
                     </div>
+                    <div style="position: absolute; top: 105px; right: 69px; z-index: 10; font-size: 12px; font-style: italic;">
+                        <field name="estimated_time" decoration-muted="1" attrs="{'invisible': [('track_progress', '=', False)]}"/>
+                    </div>
                     <widget name="web_ribbon" title="Completed" bg_color="bg-success" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     <widget name="web_ribbon" title="Cancelled" bg_color="bg-danger" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
                     <div class="oe_button_box" name="button_box" attrs="{'invisible': [('state', '=', 'completed')]}">
@@ -75,7 +78,7 @@
                         </group>
                     </group>
                     <group string="Task Details">
-                        <field name="description" string="" placeholder="Enter detailed task description..."/>
+                        <field name="description" placeholder="Enter detailed task description..."/>
                         <field name="git_push" attrs="{'invisible': [('state', '!=', 'completed')]}"/>
                     </group>
                     <notebook>
