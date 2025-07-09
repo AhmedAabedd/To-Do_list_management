@@ -112,13 +112,14 @@
         <field name="name">todo.task.kanban.progress</field>
         <field name="model">todo.task</field>
         <field name="arch" type="xml">
-            <kanban>
+            <kanban default_group_by="state">
                 <field name="name"/>
                 <field name="progress"/>
-                <field name="state"/>
+                <field name="state" kanban_group="1" default_order="state_sequence"/> <!-- Required to enable drag and drop -->
+
                 <templates>
                     <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click">
+                        <div class="oe_kanban_global_click o_kanban_card">
                             <strong><field name="name"/></strong>
                             <div class="oe_kanban_footer">
                                 <div class="o_kanban_record_bottom">
@@ -126,12 +127,12 @@
                                         <field name="progress" widget="progressbar" options="{'max_value': 100}"/>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
-                                        <field name="state" widget="badge"
-                                                decoration-info="state == 'new'"
-                                                decoration-success="state == 'inprogress'"
-                                                decoration-danger="state == 'paused'"
-                                                decoration-primary="state == 'completed'"
-                                                decoration-muted="state == 'cancelled'"/>
+                                        <field name="state" widget="badge" readonly="1"
+                                            decoration-info="state == 'new'"
+                                            decoration-success="state == 'inprogress'"
+                                            decoration-danger="state == 'paused'"
+                                            decoration-primary="state == 'completed'"
+                                            decoration-muted="state == 'cancelled'"/>
                                     </div>
                                 </div>
                             </div>
@@ -141,6 +142,7 @@
             </kanban>
         </field>
     </record>
+
 
 
     <record id="action_todo_task" model="ir.actions.act_window">

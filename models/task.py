@@ -55,6 +55,7 @@ class ToDoTask(models.Model):
 
     estimated_time = fields.Char(string="Estimated", compute="_compute_estimated_time")
 
+    state_sequence = fields.Integer(compute="_compute_state_sequence", store=True)
 
 
     @api.model
@@ -245,6 +246,18 @@ class ToDoTask(models.Model):
                     rec.estimated_time = f"(Estimated: {h:02d}:{m:02d})"
             else:
                 rec.estimated_time = ""
+
+    @api.depends('state')
+    def _compute_state_sequence(self):
+        for rec in self:
+            order_map = {
+                'new': 1,
+                'inprogress': 2,
+                'paused': 3,
+                'completed': 4,
+                'cancelled': 5
+            }
+            rec.state_sequence = order_map.get(rec.state, 99)
     
     @api.constrains('completed_units')
     def check_completed_units(self):
