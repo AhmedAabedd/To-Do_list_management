@@ -9,9 +9,10 @@ class ToDoTask(models.Model):
     _name = 'todo.task'
 
 
-    name = fields.Char(string="Task Name", placeholder="e.g.Create new module", required=1)
+    name = fields.Char(string="Task Name", required=1)
     reference = fields.Char(string="Reference", default="New", required=True, copy=False, readonly=True)
     project_id = fields.Many2one('todo.project', string="Project")
+    created_by_id = fields.Many2one('res.users', string="Created By")
     partner_id = fields.Many2one(
         'res.partner',
         string="Assign To",
@@ -55,6 +56,13 @@ class ToDoTask(models.Model):
     estimated_time = fields.Char(string="Estimated", compute="_compute_estimated_time")
 
 
+
+    @api.model
+    def default_get(self, fields_list):
+        defaults = super().default_get(fields_list)
+        defaults['created_by_id'] = self.env.user.id
+        return defaults
+            
 
     #Generate auto reference
     @api.model
@@ -198,7 +206,7 @@ class ToDoTask(models.Model):
             if rec.completed_units > rec.total_units:
                 rec.completed_units = rec.total_units
 
-            if rec.completed_units == rec.total_units:
+            if rec.completed_units == rec.total_units and rec.state != 'completed':
                 return{
                     'type': 'ir.actions.act_window',
                     'name': 'Complete Task ?',
@@ -231,7 +239,12 @@ class ToDoTask(models.Model):
                 h = int(estimated_minutes // 60)
                 m = int(estimated_minutes % 60)
 
-            rec.estimated_time = f"(Estimated: {h:02d}:{m:02d})"
+                if h == 0 and m == 0:
+                    rec.estimated_time = "(Estimated: < 1 min)"
+                else:
+                    rec.estimated_time = f"(Estimated: {h:02d}:{m:02d})"
+            else:
+                rec.estimated_time = ""
     
     @api.constrains('completed_units')
     def check_completed_units(self):
