@@ -52,6 +52,7 @@ class ToDoTask(models.Model):
     total_units = fields.Float(string="Total Units", help="e.g., Total tutorial videos to watch")
     completed_units = fields.Float(string="Completed Units", help="e.g., Number of videos watched")
     progress = fields.Float(string="Progress", compute="_compute_progress", store=True)
+    increment_by = fields.Float(default="1")
 
     estimated_time = fields.Char(string="Estimated", compute="_compute_estimated_time")
 
@@ -202,7 +203,7 @@ class ToDoTask(models.Model):
    
     def action_increase_completed_units(self):
         for rec in self:
-            rec.completed_units += 1
+            rec.completed_units += rec.increment_by
 
             if rec.completed_units > rec.total_units:
                 rec.completed_units = rec.total_units
@@ -222,7 +223,7 @@ class ToDoTask(models.Model):
     
     def action_decrease_completed_units(self):
         for rec in self:
-            rec.completed_units -= 1
+            rec.completed_units -= rec.increment_by
     
     def _compute_estimated_time(self):
         for rec in self:

@@ -75,6 +75,7 @@
                                 <field name="completed_units" style="flex: 1;" class="oe_inline"/>
                                 <button name="action_decrease_completed_units" type="object" string="-" class="btn btn-light btn-sm" style="padding: 3px 10px;"/>
                                 <button name="action_increase_completed_units" type="object" string="+" class="btn btn-light btn-sm" style="padding: 3px 10px;"/>
+                                <field name="increment_by"/>
                             </div>
                         </group>
                     </group>
@@ -92,7 +93,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Time Management" attrs="{'invisible': [('state', '!=', 'completed')]}">
+                        <page string="Timesheets" attrs="{'invisible': [('state', '!=', 'completed')]}">
                             <group>
                                 <field name="start_time" readonly="1"/>
                                 <field name="finish_time" readonly="1"/>
