@@ -78,6 +78,7 @@ class ToDoTask(models.Model):
         for rec in self:
             rec.state = 'inprogress'
             rec.start_time = fields.Datetime.now()
+            rec._compute_active_duration()
             rec.history_line_ids = [(0, 0, {
                 'action': 'start',
                 'date_time': fields.Datetime.now(),
@@ -87,6 +88,7 @@ class ToDoTask(models.Model):
     def action_paused(self):
         for rec in self:
             rec.state = 'paused'
+            rec._compute_active_duration()
             rec.history_line_ids = [(0, 0, {
                 'action': 'pause',
                 'date_time': fields.Datetime.now(),
@@ -96,6 +98,7 @@ class ToDoTask(models.Model):
     def action_resume(self):
         for rec in self:
             rec.state = 'inprogress'
+            rec._compute_active_duration()
             rec.history_line_ids = [(0, 0, {
                 'action': 'resume',
                 'date_time': fields.Datetime.now(),
@@ -107,6 +110,7 @@ class ToDoTask(models.Model):
             rec.deadline_date = ''
             rec.state = 'completed'
             rec.finish_time = fields.Datetime.now()
+            rec._compute_active_duration()
             rec.history_line_ids = [(0, 0, {
                 'action': 'complete',
                 'date_time': fields.Datetime.now(),
