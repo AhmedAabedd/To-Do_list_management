@@ -1,0 +1,26 @@
+<odoo>
+
+    <record id="wizard_add_milestone_form" model="ir.ui.view">
+        <field name="name">add.milestone.form</field>
+        <field name="model">add.milestone</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="task_id" readonly="1" invisible="0"/>
+                    <field name="date_time" readonly="1" invisible="0"/>
+                    <field name="name" placeholder="Give a name for this milestone..."/>
+                </group>
+                <footer>
+                    <button string="Add Milestone" type="object" name="action_add_milestone" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_add_milestone" model="ir.actions.act_window">
+        <field name="name">Add Milestone</field>
+        <field name="res_model">add.milestone</field>
+    </record>
+
+</odoo>

@@ -81,6 +81,7 @@ class ToDoTask(models.Model):
             rec.history_line_ids = [(0, 0, {
                 'action': 'start',
                 'date_time': fields.Datetime.now(),
+                'duration': rec.active_duration,
             })]
     
     def action_paused(self):
@@ -89,6 +90,7 @@ class ToDoTask(models.Model):
             rec.history_line_ids = [(0, 0, {
                 'action': 'pause',
                 'date_time': fields.Datetime.now(),
+                'duration': rec.active_duration,
             })]
     
     def action_resume(self):
@@ -97,6 +99,7 @@ class ToDoTask(models.Model):
             rec.history_line_ids = [(0, 0, {
                 'action': 'resume',
                 'date_time': fields.Datetime.now(),
+                'duration': rec.active_duration,
             })]
     
     def action_completed(self):
@@ -107,6 +110,7 @@ class ToDoTask(models.Model):
             rec.history_line_ids = [(0, 0, {
                 'action': 'complete',
                 'date_time': fields.Datetime.now(),
+                'duration': rec.active_duration,
             })]
 
     def action_cancelled(self):
@@ -122,8 +126,23 @@ class ToDoTask(models.Model):
                 }
             }
     
+    def action_mark_milestone(self):
+        for rec in self:
+            return{
+                'type': 'ir.actions.act_window',
+                'name': 'Add Milestone',
+                'res_model': 'add.milestone',
+                'view_mode': 'form',
+                'target':'new',
+                'context': {
+                    'default_task_id': rec.id,
+                    'default_date_time': fields.Datetime.now()
+                }
+            }
+    
     def _compute_remaining_state(self):
         today = fields.Date.today()
+        print("////////////////////////////////// INSIDE _compute_remaining_state ////////////////////////")
         for rec in self:
             if rec.due_date:
                 delta = (rec.due_date - today).days
@@ -293,7 +312,16 @@ class HistoryLines(models.Model):
         ('pause', 'Pause'),
         ('resume', 'Resume'),
         ('complete', 'Complete'),
-        ('cancel', 'Cancel')
+        ('cancel', 'Cancel'),
+        ('milestone', 'Milestone')
     ])
     
     date_time = fields.Datetime(string="Time")
+    duration = fields.Char(string="Duration")
+    name = fields.Char(string="Description")
+
+    #FOR MILESTONES
+    
+    lap_number = fields.Integer(string="Lap Number")
+    time_since_last_lap = fields.Char(string="Time Since Last Lap")
+    total_elapsed = fields.Char(string="Total Elapsed Time")

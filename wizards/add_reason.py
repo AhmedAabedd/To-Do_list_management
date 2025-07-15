@@ -22,5 +22,6 @@ class AddReason(models.TransientModel):
                 rec.task_id.history_line_ids = [(0, 0, {
                     'action': 'cancel',
                     'date_time': fields.Datetime.now(),
+                    'duration': rec.task_id.active_duration,
                 })]
                 return {'type': 'ir.actions.act_window_close'}#to close the wizard when confirming

@@ -36,6 +36,7 @@
                     <button name="action_paused" string="Pause" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
                     <button name="action_resume" string="Resume" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'paused')]}"/>
                     <button name="action_cancelled" string="Cancel" type="object" class="oe-link" attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
+                    <button name="action_mark_milestone" string="Add Milestone" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
@@ -86,10 +87,12 @@
                     <notebook>
                         <page string="Activity History">
                             <field name="history_line_ids">
-                                <tree>
+                                <tree decoration-info = "action == 'milestone'">
                                     <field name="task_id" invisible="1"/>
                                     <field name="action"/>
                                     <field name="date_time"/>
+                                    <field name="duration"/>
+                                    <field name="name"/>
                                 </tree>
                             </field>
                         </page>
@@ -100,7 +103,7 @@
                                 <field name="active_duration"/>
                             </group>    
                         </page>
-                        <page string="Cancellation Reason" attrs="{'invisible': [('cancel_reason', '=', False)]}">
+                        <page string="Cancellation Reason" attrs="{'invisible': [('state', '!=', 'cancelled')]}">
                             <field name="cancel_reason"/>
                         </page>
                     </notebook>
@@ -117,6 +120,8 @@
                 <field name="name"/>
                 <field name="progress"/>
                 <field name="state" kanban_group="1" default_order="state_sequence"/> <!-- Required to enable drag and drop -->
+                <field name="deadline_date"/>
+                <field name="remaining_state"/>
 
                 <templates>
                     <t t-name="kanban-box">
@@ -126,6 +131,10 @@
                                 <div class="o_kanban_record_bottom">
                                     <div class="oe_kanban_bottom_left">
                                         <field name="progress" widget="progressbar" options="{'max_value': 100}"/>
+                                        <field name="deadline_date" decoration-warning="remaining_state == 'warning'"
+                                                                    decoration-danger="remaining_state == 'danger'"
+                                                                    decoration-bf="True"
+                                                                    attrs="{'invisible': [('state', 'in', ['completed', 'cancelled'])]}"/>
                                     </div>
                                     <div class="oe_kanban_bottom_right">
                                         <field name="state" widget="badge" readonly="1"
