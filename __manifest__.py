@@ -14,6 +14,7 @@
              'wizards/add_reason_view.xml',
              'wizards/confirm_complete_view.xml',
              'wizards/add_milestone_view.xml',
+             'wizards/add_git_commit_view.xml',
              'views/menu.xml',
              'views/task_view.xml',
              'views/project_view.xml',

@@ -10,6 +10,7 @@ class AddMilestone(models.TransientModel):
 
     task_id = fields.Many2one('todo.task', string="Task")
     date_time = fields.Datetime(string="On")
+    duration = fields.Char(string="Duration")
     name = fields.Char(string="Description", required=True)
 
 
@@ -20,7 +21,7 @@ class AddMilestone(models.TransientModel):
                 rec.task_id.history_line_ids = [(0, 0, {
                     'action': 'milestone',
                     'date_time': rec.date_time,
-                    'duration': rec.task_id.active_duration,
+                    'duration': rec.duration,
                     'name': rec.name
                 })]
                 return {'type': 'ir.actions.act_window_close'}#to close the wizard when confirming

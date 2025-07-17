@@ -8,6 +8,7 @@
                 <group>
                     <field name="task_id" readonly="1" invisible="0"/>
                     <field name="date_time" readonly="1" invisible="0"/>
+                    <field name="duration" readonly="1" invisible="0"/>
                     <field name="name" placeholder="Give a name for this milestone..."/>
                 </group>
                 <footer>

@@ -36,7 +36,8 @@
                     <button name="action_paused" string="Pause" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
                     <button name="action_resume" string="Resume" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'paused')]}"/>
                     <button name="action_cancelled" string="Cancel" type="object" class="oe-link" attrs="{'invisible': [('state', 'in', ['inprogress', 'completed', 'cancelled'])]}"/>
-                    <button name="action_mark_milestone" string="Add Milestone" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                    <button name="action_add_milestone" string="Add Milestone" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
+                    <button name="action_open_add_git_commit_wizard" string="Add Git Commit" type="object" class="oe-link" attrs="{'invisible': [('state', '!=', 'inprogress')]}"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,inprogress,completed"/>
                 </header>
                 <sheet>
@@ -87,7 +88,8 @@
                     <notebook>
                         <page string="Activity History">
                             <field name="history_line_ids">
-                                <tree decoration-info = "action == 'milestone'">
+                                <tree decoration-info = "action == 'milestone'"
+                                      decoration-success = "action == 'commit'">
                                     <field name="task_id" invisible="1"/>
                                     <field name="action"/>
                                     <field name="date_time"/>

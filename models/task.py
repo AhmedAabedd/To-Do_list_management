@@ -130,7 +130,7 @@ class ToDoTask(models.Model):
                 }
             }
     
-    def action_mark_milestone(self):
+    def action_add_milestone(self):
         for rec in self:
             return{
                 'type': 'ir.actions.act_window',
@@ -140,9 +140,26 @@ class ToDoTask(models.Model):
                 'target':'new',
                 'context': {
                     'default_task_id': rec.id,
-                    'default_date_time': fields.Datetime.now()
+                    'default_date_time': fields.Datetime.now(),
+                    'default_duration': rec.active_duration,
                 }
             }
+    
+    def action_open_add_git_commit_wizard(self):
+        for rec in self:
+            return{
+                'type': 'ir.actions.act_window',
+                'name': 'Add Git Commit',
+                'res_model': 'add.git.commit',
+                'view_mode': 'form',
+                'target':'new',
+                'context': {
+                    'default_task_id': rec.id,
+                    'default_date_time': fields.Datetime.now(),
+                    'default_duration': rec.active_duration,
+                }
+            }
+
     
     def _compute_remaining_state(self):
         today = fields.Date.today()
@@ -317,7 +334,8 @@ class HistoryLines(models.Model):
         ('resume', 'Resume'),
         ('complete', 'Complete'),
         ('cancel', 'Cancel'),
-        ('milestone', 'Milestone')
+        ('milestone', 'Milestone'),
+        ('commit', 'Git Commit')
     ])
     
     date_time = fields.Datetime(string="Time")
